@@ -8,11 +8,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.myshoppinglist.R
-import com.example.myshoppinglist.domain.ShopItem
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
+
+    private var count = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +27,11 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             Log.d("MainActivityTest", it.toString())
+            if (count == 0) {
+                count++
+                val item = it[0]
+                viewModel.deleteShopItem(item)
+            }
         }
-        viewModel.getShopList()
-        viewModel.deleteShopItem(ShopItem("Item 2" , 2, true, id = 2))
     }
 }
