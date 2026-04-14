@@ -1,19 +1,10 @@
 package com.example.myshoppinglist.presentation
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myshoppinglist.R
-import com.example.myshoppinglist.domain.ShopItem
-import kotlin.toString
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,8 +23,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         val rvShopList = findViewById<RecyclerView>(R.id.rv_shop_list)
-        adapter = ShopListAdapter()
-        rvShopList.adapter = adapter
+        with(rvShopList) {
+            // где-то здесь снизу допущена ошибка (я думаю в adapter = adapter)
+            adapter = ShopListAdapter()
+            adapter = adapter
+            recycledViewPool.setMaxRecycledViews(
+                ShopListAdapter.VIEW_TYPE_ENABLED,
+                ShopListAdapter.MAX_POOL_SIZE
+            )
+            recycledViewPool.setMaxRecycledViews(
+                ShopListAdapter.VIEW_TYPE_DISABLED,
+                ShopListAdapter.MAX_POOL_SIZE
+            )
+        }
     }
-
 }
