@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setupRecyclerView()
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
         }
@@ -39,11 +39,10 @@ class MainActivity : AppCompatActivity() {
         }
         setupLongClickListener()
         setupClickListener()
-        setupSwipeClickListener(rvShopList)
+        setupSwipeListener(rvShopList)
     }
 
-    private fun setupSwipeClickListener(rvShopList: RecyclerView?) {
-        // колбэк для свайпа элемента
+    private fun setupSwipeListener(rvShopList: RecyclerView) {
         val callback = object : ItemTouchHelper.SimpleCallback(
             0,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
@@ -57,29 +56,23 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
 
-            override fun onSwiped(
-                viewHolder: RecyclerView.ViewHolder,
-                direction: Int
-            ) {
-                val position = viewHolder.adapterPosition
-                viewModel.deleteShopItem(shopListAdapter.currentList[position])
-                shopListAdapter.notifyItemRemoved(position)
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val item = shopListAdapter.currentList[viewHolder.adapterPosition]
+                viewModel.deleteShopItem(item)
             }
         }
-
         val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(rvShopList)
     }
 
     private fun setupClickListener() {
         shopListAdapter.onShopItemClickListener = {
-            Log.d("MainActivity", "Clicked $it")
+            Log.d("MainActivity", it.toString())
         }
     }
 
     private fun setupLongClickListener() {
         shopListAdapter.onShopItemLongClickListener = {
-            Log.d("MainActivity", "Long click on $it")
             viewModel.changeEnableState(it)
         }
     }
