@@ -1,5 +1,7 @@
 package com.example.myshoppinglist.presentation
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +24,27 @@ class ShopItemActivity : AppCompatActivity() {
                 maxOf(systemBars.bottom, imeInsets.bottom)
             )
             insets
+        }
+    }
+
+    companion object {
+
+        private const val EXTRA_SCREEN_MODE = "extra_mode"
+        private const val EXTRA_SHOP_ITEM_ID = "extra_shop_item_id"
+        private const val EXTRA_MODE_EDIT = "mode_edit"
+        private const val EXTRA_MODE_ADD = "mode_add"
+
+        fun newIntentAddItem(context: Context): Intent {
+            val intent = Intent(context, ShopItemActivity::class.java)
+            intent.putExtra(EXTRA_SCREEN_MODE, EXTRA_MODE_ADD)
+            return intent
+        }
+
+        fun newIntentEditItem(context: Context, shopItemId: Int): Intent {
+            val intent = Intent(context, ShopItemActivity::class.java)
+            intent.putExtra(EXTRA_SCREEN_MODE, EXTRA_MODE_EDIT)
+            intent.putExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
+            return intent
         }
     }
 }
