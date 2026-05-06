@@ -1,5 +1,5 @@
-import android.content.Context
-import android.content.Intent
+package com.example.myshoppinglist.presentation
+
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,14 +13,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.myshoppinglist.R
 import com.example.myshoppinglist.data.ShopListRepositoryImpl
 import com.example.myshoppinglist.domain.ShopItem
-import com.example.myshoppinglist.presentation.ShopItemActivity
 import com.example.myshoppinglist.presentation.ShopItemViewModel
 import com.google.android.material.textfield.TextInputLayout
 
-class ShopItemFragment(
-    private val screenMode: String = MODE_UNKNOWN,
-    private val shopItemId: Int = ShopItem.UNDEFINED_ID
-) : Fragment() {
+class ShopItemFragment : Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
     private lateinit var tilName: TextInputLayout
@@ -28,6 +24,14 @@ class ShopItemFragment(
     private lateinit var etName: EditText
     private lateinit var etCount: EditText
     private lateinit var buttonSave: Button
+
+    private var screenMode: String = MODE_UNKNOWN
+    private var shopItemId: Int = ShopItem.UNDEFINED_ID
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        parseParams()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +42,6 @@ class ShopItemFragment(
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        parseIntent()
         initViews(view)
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         addTextChangeListeners()
@@ -125,25 +128,36 @@ class ShopItemFragment(
     }
 
     // Извлекает параметры из Intent и определяет режим работы Activity
-    private fun parseIntent() {
-        if (screenMode != MODE_ADD && screenMode != MODE_EDIT) {
+    private fun parseParams() {
+        // requireArguments() используется для получения ненулабельных значений
+        val args = requireArguments()
+        if (!args.containsKey(SCREEN_MODE)) {
             throw RuntimeException("Param screen mode is absent")
         }
-        if (screenMode == MODE_EDIT && shopItemId == ShopItem.UNDEFINED_ID) {
-            throw RuntimeException("Param shop item id is absent")
+        val mode = args.getString(SCREEN_MODE, MODE_UNKNOWN)
+        if (mode != MODE_EDIT && mode != MODE_ADD) {
+            throw RuntimeException("Unknown screen mode $mode")
+        }
+        screenMode = mode
+        // Если режим редактирования, извлекаем ID элемента
+        if (screenMode == MODE_EDIT) {
+            if (!args.containsKey(SHOP_ITEM_ID)) {
+                throw RuntimeException("Param shop item id is absent")
+            }
+            shopItemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
     }
 
     companion object {
 
         // Ключ для передачи режима работы через Intent
-        private const val EXTRA_SCREEN_MODE = "extra_mode"
+        private const val SCREEN_MODE = "extra_mode"
 
         // Неизвестный режим (значение по умолчанию)
         private const val MODE_UNKNOWN = ""
 
         // Ключ для передачи ID элемента через Intent
-        private const val EXTRA_SHOP_ITEM_ID = "extra_shop_item_id"
+        private const val SHOP_ITEM_ID = "extra_shop_item_id"
 
         // Режим редактирования существующего элемента
         private const val MODE_EDIT = "mode_edit"
@@ -152,26 +166,20 @@ class ShopItemFragment(
         private const val MODE_ADD = "mode_add"
 
         fun newInstanceAddItem(): ShopItemFragment {
-            return ShopItemFragment(MODE_ADD)
+            return ShopItemFragment().apply {
+                arguments = Bundle().apply {
+                    putString(SCREEN_MODE, MODE_ADD)
+                }
+            }
         }
 
         fun newInstanceEditItem(shopItemId: Int): ShopItemFragment {
-            return ShopItemFragment(MODE_EDIT, shopItemId)
-        }
-
-        // Создаёт Intent для запуска Activity в режиме добавления нового элемента
-        fun newIntentAddItem(context: Context): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, MODE_ADD)
-            return intent
-        }
-
-        // Создаёт Intent для запуска Activity в режиме редактирования элемента
-        fun newIntentEditItem(context: Context, shopItemId: Int): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, MODE_EDIT)
-            intent.putExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
-            return intent
+            return ShopItemFragment().apply {
+                arguments = Bundle().apply {
+                    putString(SCREEN_MODE, MODE_EDIT)
+                    putInt(SHOP_ITEM_ID, shopItemId)
+                }
+            }
         }
     }
 }
