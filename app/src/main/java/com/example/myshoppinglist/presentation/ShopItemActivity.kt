@@ -159,7 +159,7 @@ class ShopItemActivity : AppCompatActivity() {
             shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
         }
     }
-//
+
     companion object {
 
         // Ключ для передачи режима работы через Intent
