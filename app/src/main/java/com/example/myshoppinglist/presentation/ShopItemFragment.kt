@@ -64,7 +64,7 @@ class ShopItemFragment(
             tilCount.error = message
         }
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            finish()
+            activity?.onBackPressed()
         }
     }
 
@@ -150,6 +150,14 @@ class ShopItemFragment(
 
         // Режим добавления нового элемента
         private const val MODE_ADD = "mode_add"
+
+        fun newInstanceAddItem(): ShopItemFragment {
+            return ShopItemFragment(MODE_ADD)
+        }
+
+        fun newInstanceEditItem(shopItemId: Int): ShopItemFragment {
+            return ShopItemFragment(MODE_EDIT, shopItemId)
+        }
 
         // Создаёт Intent для запуска Activity в режиме добавления нового элемента
         fun newIntentAddItem(context: Context): Intent {

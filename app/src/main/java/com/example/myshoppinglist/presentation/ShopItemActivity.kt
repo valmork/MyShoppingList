@@ -30,11 +30,11 @@ class ShopItemActivity : AppCompatActivity() {
 //    private lateinit var etCount: EditText
 //    private lateinit var buttonSave: Button
 //
-//    // Режим работы экрана: добавление или редактирование
-//    private var screenMode = MODE_UNKNOWN
-//
-//    // ID редактируемого элемента (используется только в режиме редактирования)
-//    private var shopItemId = ShopItem.UNDEFINED_ID
+    // Режим работы экрана: добавление или редактирование
+    private var screenMode = MODE_UNKNOWN
+
+    // ID редактируемого элемента (используется только в режиме редактирования)
+    private var shopItemId = ShopItem.UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,11 +51,11 @@ class ShopItemActivity : AppCompatActivity() {
             )
             insets
         }
-//        parseIntent()
+        parseIntent()
 //        initViews()
 //        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
 //        addTextChangeListeners()
-//        launchRightMode()
+        launchRightMode()
 //        observeViewModel()
     }
 
@@ -81,13 +81,17 @@ class ShopItemActivity : AppCompatActivity() {
 //        }
 //    }
 //
-//    private fun launchRightMode() {
-//        // Запускаем соответствующий режим работы экрана
-//        when (screenMode) {
-//            MODE_ADD -> launchAddMode()
-//            MODE_EDIT -> launchEditMode()
-//        }
-//    }
+    private fun launchRightMode() {
+        // Запускаем соответствующий режим работы экрана
+        val fragment = when (screenMode) {
+            MODE_ADD -> ShopItemFragment.newInstanceAddItem()
+            MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemId)
+            else -> throw RuntimeException("Unknown screen mode $screenMode")
+        }
+        supportFragmentManager.beginTransaction()
+            .add(R.id.shop_item_container, fragment)
+            .commit()
+    }
 //
 //    private fun addTextChangeListeners() {
 //        etName.doAfterTextChanged { viewModel.resetErrorInputName() }
@@ -137,24 +141,24 @@ class ShopItemActivity : AppCompatActivity() {
 //        buttonSave = findViewById<Button>(R.id.save_button)
 //    }
 //
-//    // Извлекает параметры из Intent и определяет режим работы Activity
-//    private fun parseIntent() {
-//        if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
-//            throw RuntimeException("Param screen mode is absent")
-//        }
-//        val mode = intent.getStringExtra(EXTRA_SCREEN_MODE)
-//        if (mode != MODE_EDIT && mode != MODE_ADD) {
-//            throw RuntimeException("Unknown screen mode $mode")
-//        }
-//        screenMode = mode
-//        // Если режим редактирования, извлекаем ID элемента
-//        if (screenMode == MODE_EDIT) {
-//            if (!intent.hasExtra(EXTRA_SHOP_ITEM_ID)) {
-//                throw RuntimeException("Param shop item id is absent")
-//            }
-//            shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
-//        }
-//    }
+    // Извлекает параметры из Intent и определяет режим работы Activity
+    private fun parseIntent() {
+        if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
+            throw RuntimeException("Param screen mode is absent")
+        }
+        val mode = intent.getStringExtra(EXTRA_SCREEN_MODE)
+        if (mode != MODE_EDIT && mode != MODE_ADD) {
+            throw RuntimeException("Unknown screen mode $mode")
+        }
+        screenMode = mode
+        // Если режим редактирования, извлекаем ID элемента
+        if (screenMode == MODE_EDIT) {
+            if (!intent.hasExtra(EXTRA_SHOP_ITEM_ID)) {
+                throw RuntimeException("Param shop item id is absent")
+            }
+            shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
+        }
+    }
 //
     companion object {
 
