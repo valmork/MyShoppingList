@@ -22,14 +22,6 @@ import com.google.android.material.textfield.TextInputLayout
 
 class ShopItemActivity : AppCompatActivity() {
 
-//    private lateinit var viewModel: ShopItemViewModel
-//
-//    private lateinit var tilName: TextInputLayout
-//    private lateinit var tilCount: TextInputLayout
-//    private lateinit var etName: EditText
-//    private lateinit var etCount: EditText
-//    private lateinit var buttonSave: Button
-//
     // Режим работы экрана: добавление или редактирование
     private var screenMode = MODE_UNKNOWN
 
@@ -52,35 +44,11 @@ class ShopItemActivity : AppCompatActivity() {
             insets
         }
         parseIntent()
-//        initViews()
-//        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-//        addTextChangeListeners()
-        launchRightMode()
-//        observeViewModel()
+        if (savedInstanceState == null) {
+            launchRightMode()
+        }
     }
 
-//    private fun observeViewModel() {
-//        viewModel.errorInputName.observe(this) {
-//            val message = if (it) {
-//                getString(R.string.error_input_name)
-//            } else {
-//                null
-//            }
-//            tilName.error = message
-//        }
-//        viewModel.errorInputCount.observe(this) {
-//            val message = if (it) {
-//                getString(R.string.error_input_count)
-//            } else {
-//                null
-//            }
-//            tilCount.error = message
-//        }
-//        viewModel.shouldCloseScreen.observe(this) {
-//            finish()
-//        }
-//    }
-//
     private fun launchRightMode() {
         // Запускаем соответствующий режим работы экрана
         val fragment = when (screenMode) {
@@ -89,58 +57,10 @@ class ShopItemActivity : AppCompatActivity() {
             else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
         supportFragmentManager.beginTransaction()
-            .add(R.id.shop_item_container, fragment)
+            .replace(R.id.shop_item_container, fragment)
             .commit()
     }
-//
-//    private fun addTextChangeListeners() {
-//        etName.doAfterTextChanged { viewModel.resetErrorInputName() }
-//        etCount.doAfterTextChanged { viewModel.resetErrorInputCount() }
-//    }
-//
-//    private fun launchAddMode() {
-//        buttonSave.setOnClickListener {
-//            val name = etName.text?.toString()
-//            val count = etCount.text?.toString()
-//            viewModel.addShopItem(name, count)
-//            Log.d(
-//                "ShopItemActivity",
-//                "New item Shopitem($name, $count), " +
-//                        "size: ${ShopListRepositoryImpl.getShopList().value?.size}"
-//            )
-//        }
-//    }
-//
-//    private fun launchEditMode() {
-//        viewModel.getShopItem(shopItemId)
-//        viewModel.shopItem.observe(this) {
-//            etName.setText(it.name)
-//            etCount.setText(it.count.toString())
-//        }
-//        buttonSave.setOnClickListener {
-//            val name = etName.text?.toString()
-//            val count = etCount.text?.toString()
-//            viewModel.editShopItem(
-//                name,
-//                count
-//            )
-//            Log.d(
-//                "ShopItemActivity",
-//                "Edited item id: $shopItemId, " +
-//                        "new value: ShopItem($name, $count), " +
-//                        "size: ${ShopListRepositoryImpl.getShopList().value?.size}"
-//            )
-//        }
-//    }
-//
-//    private fun initViews() {
-//        tilName = findViewById<TextInputLayout>(R.id.til_name)
-//        tilCount = findViewById<TextInputLayout>(R.id.til_count)
-//        etName = findViewById<EditText>(R.id.et_name)
-//        etCount = findViewById<EditText>(R.id.et_count)
-//        buttonSave = findViewById<Button>(R.id.save_button)
-//    }
-//
+
     // Извлекает параметры из Intent и определяет режим работы Activity
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
