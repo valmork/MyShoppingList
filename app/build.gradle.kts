@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    id ("kotlin-kapt")
 }
 
 android {
@@ -27,6 +28,10 @@ android {
             )
         }
     }
+    buildFeatures {
+        dataBinding = true   // <-- убедитесь, что Data Binding включён
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
