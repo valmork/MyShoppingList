@@ -1,8 +1,8 @@
 package com.sumin.shoppinglist.presentation
 
 import androidx.databinding.BindingAdapter
+import com.example.myshoppinglist.R
 import com.google.android.material.textfield.TextInputLayout
-import com.sumin.shoppinglist.R
 
 @BindingAdapter("errorInputName")
 fun bindErrorInputName(textInputLayout: TextInputLayout, isError: Boolean) {
