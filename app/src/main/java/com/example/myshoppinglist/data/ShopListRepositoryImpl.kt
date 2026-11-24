@@ -2,7 +2,9 @@ package com.example.myshoppinglist.data
 
 import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import com.example.myshoppinglist.domain.ShopItem
 import com.example.myshoppinglist.domain.ShopListRepository
 import kotlin.random.Random
@@ -31,6 +33,8 @@ class ShopListRepositoryImpl(
         return mapper.mapDbModelToEntity(dbModel)
     }
 
-    //реализация в следующем уроке
-    override fun getShopList(): LiveData<List<ShopItem>> = shopListDao.getShopList()
+    //можно также использовать MediatorLiveData. здесь он под капотом. позволяет перехватывать события LiveData и пробрасывать их дальше
+    override fun getShopList(): LiveData<List<ShopItem>> = shopListDao.getShopList().map {
+        mapper.mapListDbModelToListEntity(it)
+    }
 }
