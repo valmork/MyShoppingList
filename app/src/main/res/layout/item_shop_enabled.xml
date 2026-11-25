@@ -5,7 +5,7 @@
 
         <variable
             name="shopItem"
-            type="com.sumin.shoppinglist.domain.ShopItem"
+            type="com.example.myshoppinglist.domain.ShopItem"
             />
     </data>
 

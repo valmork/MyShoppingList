@@ -2,12 +2,9 @@ package com.example.myshoppinglist.data
 
 import android.app.Application
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import com.example.myshoppinglist.domain.ShopItem
 import com.example.myshoppinglist.domain.ShopListRepository
-import kotlin.random.Random
 
 class ShopListRepositoryImpl(
     application: Application
