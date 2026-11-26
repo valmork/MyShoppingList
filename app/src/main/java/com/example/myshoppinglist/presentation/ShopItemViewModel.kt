@@ -10,10 +10,16 @@ import com.example.myshoppinglist.domain.AddShopItemUseCase
 import com.example.myshoppinglist.domain.EditShopItemUseCase
 import com.example.myshoppinglist.domain.GetShopItemUseCase
 import com.example.myshoppinglist.domain.ShopItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = ShopListRepositoryImpl(application)
+
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     private val _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>
@@ -36,8 +42,10 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
     private val addShopItemUseCase = AddShopItemUseCase(repository)
 
     fun getShopItem(shopItemId: Int) {
-        val item = getShopItemUseCase.getShopItem(shopItemId)
-        _shopItem.value = item
+        scope.launch {
+            val item = getShopItemUseCase.getShopItem(shopItemId)
+            _shopItem.value = item
+        }
     }
 
     /* Здесь 2 проблемы: id по умолчанию в конструкторе будет -1, в edit мы не найдем его,
@@ -49,9 +57,11 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         val count = parseCount(inputCount)
         if (validateInput(name, count)) {
             _shopItem.value?.let {
-                val item = it.copy(name = name, count = count)
-                editShopItemUseCase.editShopItem(item)
-                finishWork()
+                scope.launch {
+                    val item = it.copy(name = name, count = count)
+                    editShopItemUseCase.editShopItem(item)
+                    finishWork()
+                }
             }
         }
     }
@@ -60,9 +70,11 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         val name = parseName(inputName)
         val count = parseCount(inputCount)
         if (validateInput(name, count)) {
-            val shopItem = ShopItem(name, count, true)
-            addShopItemUseCase.addShopItem(shopItem)
-            finishWork()
+            scope.launch {
+                val shopItem = ShopItem(name, count, true)
+                addShopItemUseCase.addShopItem(shopItem)
+                finishWork()
+            }
         }
     }
 
@@ -70,7 +82,7 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         return inputName?.trim() ?: ""
     }
 
-    private fun parseCount(inputCount: String?): Int  = inputCount?.trim()?.toIntOrNull() ?: 0
+    private fun parseCount(inputCount: String?): Int = inputCount?.trim()?.toIntOrNull() ?: 0
 
     // Проверка правильности введенных значений в полях
     private fun validateInput(name: String, count: Int): Boolean {
@@ -96,5 +108,9 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
 
     fun finishWork() {
         _shouldCloseScreen.value = true
+    }
+
+    override fun onCleared() {
+        scope.cancel()
     }
 }
